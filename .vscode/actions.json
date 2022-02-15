@@ -1,7 +1,7 @@
 [
     {
-        "name": "Depliy and build ",
-        "environment": "pase"
+        "name": "Construir y desplegar",
+        "environment": "pase",
         "extensions": [
             "GLOBAL"
         ],
