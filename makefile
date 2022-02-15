@@ -6,6 +6,6 @@ SHELL=/QOpenSys/usr/bin/qsh
 all: ejemplo101.rpgle
 
 %.rpgle:
-	system -s "CHGATR OBJ('./QRPGLESRC/$*.rpgle') ATTR(*CCSID) VALUE(1252)"
+	system -s "CHGATR OBJ('./QRPGLESRC/$*.rpgle') ATR(*CCSID) VALUE(1252)"
 	liblist -a $(LIBLIST);\
 	system "CRTRPGMOD MODULE($BIN_LIB/$*) SRCFILE(./QRPGLESRC/$*.rpgle) OPTION(*EVENTF) DBGVIEW(*SOURCE) TGTRLS(*CURRENT)"
