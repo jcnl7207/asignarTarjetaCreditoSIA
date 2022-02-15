@@ -1,7 +1,7 @@
 
 BIN_LIB=CMPSYS
 LIBLIST=&BIN_LIB
-SHELL=/QOpenSys/usr/qsh
+SHELL=/QOpenSys/usr/bin/qsh
 
 all: ejemplo101.rpgle
 
