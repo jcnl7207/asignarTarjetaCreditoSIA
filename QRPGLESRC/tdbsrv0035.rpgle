@@ -1,348 +1,380 @@
-**Free
-     HBNDDIR('SATSERVIS') dftactgrp(*no) PgmInfo(*Pcml:*Module)                 
-     FSatClienteIF a E           K DISK    PreFix(x_)                           
-     FCliMaeL01 IF   E           K DISK    PreFix(C_)                           
-     Fclidir    IF   E           K DISK                                         
-     FSRHEMPLEA IF   E           K DISK    prefix(s_)                           
-     Fclivincli1IF   E           K DISK                                         
-     Fcliciudal1if   e           k Disk    prefix(a_)                           
-     Fmppaises  if   e           k Disk    prefix(b_)                           
-     Fsatcattar if   e           k Disk    prefix(d_)                           
-     Fsatmartip if   e           k Disk    prefix(e_)                           
-     Fsatparam  if   e           k Disk    prefix(t_)                           
+**Free 
+   Ctl-Opt BNDDIR('SATSERVIS') dftactgrp(*no) PgmInfo(*Pcml:*Module);
+   Dcl-F SatCliente  Usage(*Input) Keyed PreFix(x_);
+   Dcl-F CliMaeL01   Usage(*Input) Keyed PreFix(C_);
+   Dcl-F clidir      Usage(*Input) Keyed;
+   Dcl-F SRHEMPLEA   Usage(*Input) Keyed prefix(s_);
+   Dcl-F clivincli1  Usage(*Input) Keyed;
+   Dcl-F cliciudal1  Usage(*Input) Keyed prefix(a_);
+   Dcl-F mppaises    Usage(*Input) Keyed prefix(b_);
+   Dcl-F satcattar   Usage(*Input) Keyed prefix(d_);
+   Dcl-F satmartip   Usage(*Input) Keyed prefix(e_);
+   Dcl-F satparam    Usage(*Input) Keyed prefix(t_);
                                                                                 
-      *----------------------------------------------------------------****     
-     D ind_cli         s              1s 0                                      
-     DNIT2             s             17S 0 Inz(0)                               
-     DCLIDES           s              5A                                        
-     Dfec_ing          S                   inz like(c_fecing)                   
-     d IndNull         s              4b00                                      
-     D LON             s              3S 0 inz                                  
-     DpDatos           S            480A                                        
-     DNumeroTarjeta    S             22                                         
-     DPrimernom        S             40A                                        
-     Dsegundnom        S             40A                                        
-     Dnombre80         S             80A                                        
-     Derror_ws         S              7a                                        
-     Ddeserr_ws        S            104a                                        
-     dpos1             s              4s 0 inz                                  
-     dparmws           s           2000a   inz                                  
-     dnom_ser          s             10a   inz                                  
-     Ddirec120         S            120A                                        
-     Ddoc_txt          S             17A                                        
-     Dcod_sis          S              3s 0 inz                                  
-     Dcod_pro          S              3s 0 inz                                  
-     Dvlr_cup          S             13s 0 inz                                  
-     dnombre120        s            120a   inz                                  
-     Dapellidos        S             40A                                        
-     Dnombres          S             40A                                        
-     Dpp_retorno       S              3A                                        
-     Dpp_descRetorno   S            200A                                        
+   //----------------------------------------------------------------****
+   Dcl-S ind_cli           Zoned(1:0);
+   Dcl-S NIT2              Zoned(17:0) Inz(0);
+   Dcl-S CLIDES            Char(5);
+   Dcl-S fec_ing           inz like(c_fecing);
+   Dcl-S IndNull           Bindec(4);
+   Dcl-S LON               Zoned(3:0) inz;
+   Dcl-S pDatos            Char(480);
+   Dcl-S NumeroTarjeta     Char(22);
+   Dcl-S Primernom         Char(40);
+   Dcl-S segundnom         Char(40);
+   Dcl-S nombre80          Char(80);
+   Dcl-S error_ws          Char(7);
+   Dcl-S deserr_ws         Char(104);
+   Dcl-S pos1              Zoned(4:0) inz;
+   Dcl-S parmws            Char(2000) inz;
+   Dcl-S nom_ser           Char(10)   inz;
+   Dcl-S direc120          Char(120);
+   Dcl-S doc_txt           Char(17);
+   Dcl-S cod_sis           Zoned(3:0) inz;
+   Dcl-S cod_pro           Zoned(3:0) inz;
+   Dcl-S vlr_cup           Zoned(13:0) inz;
+   Dcl-S nombre120         Char(120)  inz;
+   Dcl-S apellidos         Char(40);
+   Dcl-S nombres           Char(40);
+   Dcl-S pp_retorno        Char(3);
+   Dcl-S pp_descRetorno    Char(200);
+                                                                           
+   Dcl-DS *N;
+     WsClalper             Char(1733) Pos(1);
+     CODENT                Char(4)    Pos(1);
+     TIPDOCCLA             Char(3)    Pos(5);
+     NUMDOC                Char(22)   Pos(8);
+     FECDOC                Char(10)   Pos(30);
+     TIPPER                Char(1)    Pos(40);
+     ESTPER                Char(1)    Pos(41);
+     FECESTCLA             Char(10)   Pos(42);
+     TIPCLIEN              Char(2)    Pos(52);
+     SUBTIPCLI             Char(2)    Pos(54);
+     CODIDIOMA             Char(2)    Pos(56);
+     BLOQUEO               Char(1)    Pos(58);
+     INDREPOS              Char(1)    Pos(59);
+     CNAE                  Char(5)    Pos(60);
+     CODCIRBER             Char(22)   Pos(65);
+     CLAVEACCR             Char(40)   Pos(87);
+     SITCLAVER             Char(2)    Pos(127);
+     NIVSEGCER             Char(1)    Pos(129);
+     PUBLICIDAD            Char(1)    Pos(130);
+     INDVIPCER             Char(1)    Pos(131);
+     NOMBRECER             Char(40)   Pos(132);
+     NOMLARGOR             Char(30)   Pos(172);
+     APELLI1ER             Char(36)   Pos(202);
+     APELLI2ER             Char(36)   Pos(238);
+     APELARGOR             Char(50)   Pos(274);
+     CODPAISNCT            Zoned(3:0) Pos(324);
+     CODPAISNAC            Char(3)    Pos(327);
+     CODPAISRES            Char(3)    Pos(330) Inz('170');
+     SEXPER                Char(1)    Pos(333);
+     FECNAC                Zoned(10:0) Pos(334);
+     INDESTCIV             Char(1)    Pos(344);
+     REGECON               Char(1)    Pos(345);
+     INDTRACOR             Char(2)    Pos(346);
+     CODPROF               Char(3)    Pos(348);
+     FECFELICITA           Char(4)    Pos(351);
+     TIPFELICITA           Char(1)    Pos(355);
+     NOMCOR                Char(40)   Pos(356);
+     RAZSOC                Char(100)  Pos(396);
+     FORJUR                Char(8)    Pos(496);
+     FECCREA               Char(10)   Pos(504);
+     CODPAISEMP            Char(3)    Pos(514) Inz;
+     CODACT                Zoned(4:0) Pos(517) Inz(0);
+     NUMEMPLEA             Zoned(7:0) Pos(521) Inz(0);
+     NUMSUCURS             Zoned(7:0) Pos(528) Inz(0);
+     INDNIVIMP             Char(2)    Pos(535);
+     GRUPBE                Char(22)   Pos(537);
+     SECCIRBE              Char(1)    Pos(559);
+     TIPSECCIR             Char(1)    Pos(560);
+     CODSWIFT              Char(22)   Pos(561);
+     CODISIN               Char(22)   Pos(583);
+     TIPLOCAL              Char(2)    Pos(605);
+     codpaisd              Zoned(3:0) Pos(607);
+     CODREGION             Zoned(3:0) Pos(610);
+     CODPROV               Zoned(2:0) Pos(613);
+     POBLACION             Char(35)   Pos(615);
+     TIPVIA                Char(2)    Pos(650);
+     NOMVIA                Char(40)   Pos(652);
+     NUMVIA                Char(6)    Pos(692);
+     EDIFICIO              Char(4)    Pos(698);
+     ESCALERA              Char(4)    Pos(702);
+     PISOL                 Char(4)    Pos(706);
+     PUERTA                Char(4)    Pos(710);
+     RESTODIR              Char(40)   Pos(714);
+     CODPOSTAL             Char(10)   Pos(754);
+     CODAPTCOR             Char(10)   Pos(764);
+     EMPRESA               Char(3)    Pos(774);
+     CENTRO                Char(4)    Pos(777);
+     DEPARTAM              Char(4)    Pos(781);
+     REFPER                Char(22)   Pos(785);
+     INDENVCOR             Char(1)    Pos(807);
+     TIPMEDIO1             Char(2)    Pos(808);
+     CARACTER1             Char(1)    Pos(810);
+     DESCLAVE1             Char(100)  Pos(811);
+     TIPMEDIO2             Char(2)    Pos(911);
+     CARACTER2             Char(1)    Pos(913);
+     DESCLAVE2             Char(100)  Pos(914);
+     TIPMEDIO3             Char(1002) Pos(014);
+     CARACTER3             Char(1001) Pos(016);
+     DESCLAVE3             Char(1100) Pos(017);
+     TIPMEDIO4             Char(1002) Pos(117);
+     CARACTER4             Char(1001) Pos(119);
+     DESCLAVE4             Char(1100) Pos(120);
+     TIPMEDIO5             Char(1002) Pos(220);
+     CARACTER5             Char(1001) Pos(222);
+     DESCLAVE5             Char(1100) Pos(223);
+     TIPMEDIO6             Char(1002) Pos(323);
+     CARACTER6             Char(1001) Pos(325);
+     DESCLAVE6             Char(1100) Pos(326);
+     OBSERVACION           Char(1300) Pos(426);
+     IDENTCLI              Char(1008) Pos(726);
+   End-DS;        
+
+   Dcl-DS *N;        
+     WsAdalcon             Char(854)  Pos(1);
+     CODENT_A              Char(4)    Pos(1);
+     CENTALTA              Char(4)    Pos(5);
+     PRODUCTO              Char(2)    Pos(9);
+     SUBPRODU              Char(4)    Pos(11);
+     CONPROD               Char(3)    Pos(15);
+     CODCONVEN             Char(4)    Pos(18);
+     CODPROMO              Char(3)    Pos(22);
+     NUMPER                Char(8)    Pos(25);
+     NUMPERVAL             Char(8)    Pos(33);
+     INDCTAEMP             Char(1)    Pos(41);
+     INDNOMEMP             Char(1)    Pos(42);
+     NOMBREEMP             Char(30)   Pos(43);
+     CODREGIMEN            Char(4)    Pos(73);
+     FORPAGO               Char(2)    Pos(77);
+     INDSITCTA             Char(1)    Pos(79);
+     GRUPOLIQ              Char(2)    Pos(80);
+     GRUPOCUO              Char(2)    Pos(82);
+     OFIVEN                Char(4)    Pos(84);
+     CLAMON1               Char(3)    Pos(88);
+     LIMCRECTA1IMP         Char(17)   Pos(91);
+     LIMCRECTAG1           Char(17)   Pos(108);
+     IMPFPAGOA1            Char(17)   Pos(125);
+     PORPAGOA1             Char(7)    Pos(142);
+     LIMCRECOM1            Char(17)   Pos(149);
+     LIMCRECOMG1           Char(17)   Pos(166);
+     CLAMON2               Char(3)    Pos(183);
+     LIMCRECTA2IMP         Char(17)   Pos(186);
+     LIMCRECTAG2           Char(17)   Pos(203);
+     IMPFPAGOA2            Char(17)   Pos(220);
+     PORPAGOA2             Char(7)    Pos(237);
+     LIMCRECOM2            Char(17)   Pos(244);
+     LIMCRECOMG2           Char(17)   Pos(261);
+     IBAN1                 Char(4)    Pos(278);
+     CTACARGO1             Char(30)   Pos(282);
+     CLAMONCON1            Char(3)    Pos(312);
+     INDDOMCARCRE          Char(1)    Pos(315);
+     CODFORMATO            Char(10)   Pos(316);
+     IBANDOM1              Char(4)    Pos(326);
+     CTADOMTAR1            Char(30)   Pos(330);
+     MONCTATAR1            Char(3)    Pos(360);
+     IBANDOM2              Char(4)    Pos(363);
+     CTADOMTAR2            Char(30)   Pos(367);
+     MONCTATAR2            Char(3)    Pos(397);
+     INDACTLIMTAR          Char(1)    Pos(400);
+     NUMPERTAR             Char(8)    Pos(401);
+     CALPARTTAR            Char(2)    Pos(409);
+     INDTIPTTAR            Char(2)    Pos(411);
+     CODMARTAR             Char(2)    Pos(413);
+     NOMBENREDTAR          Char(35)   Pos(415);
+     IDEMPLEADOTAR         Char(20)   Pos(450);
+     PANASOCTAR            Char(22)   Pos(470);
+     CODBARRASTAR          Char(14)   Pos(492);
+     REFFOTOTAR            Char(30)   Pos(506);
+     ESTPLASTAR1           Char(40)   Pos(536);
+     ESTPLASTAR2           Char(40)   Pos(576);
+     INDENVESTTAR          Char(1)    Pos(616);
+     CENTROESTTAR          Char(4)    Pos(617);
+     INDENVPINTAR          Char(1)    Pos(621);
+     CENTROPINTAR          Char(4)    Pos(622);
+     INDESTTAROL           Char(1)    Pos(626);
+     INDIMPPINOL           Char(1)    Pos(627);
+     CONDESTTAR            Char(3)    Pos(628);
+     CODPROMOTAR           Char(3)    Pos(631);
+     CLAMON1TAR            Char(3)    Pos(634);
+     LIMDIACAJ1TAR         Char(17)   Pos(637);
+     MAXDIACAJ1TAR         Char(6)    Pos(654);
+     CLAMON2TAR            Char(3)    Pos(660);
+     LIMDIACAJ2TAR         Char(17)   Pos(663);
+     MAXDIACAJ2TAR         Char(6)    Pos(680);
+     CUENTA                Char(12)   Pos(686);
+     DESCLAMON             Char(20)   Pos(698);
+     FECALTA               Char(10)   Pos(718);
+     PANTAR                Char(22)   Pos(728);
+     FECALTATAR            Char(10)   Pos(750);
+     FECCADTAR             Char(6)    Pos(760);
+     DESMARRED             Char(10)   Pos(766);
+     DESTIPTRED            Char(10)   Pos(776);
+     INDSITTAR             Char(2)    Pos(786);
+     CODUSO                Char(2)    Pos(788);
+     NUMSEC                Char(12)   Pos(790);
+     INDEXECUO             Char(1)    Pos(802);
+     IBAN2                 Char(4)    Pos(803);
+     CTACARGO2             Char(30)   Pos(807);
+     CLAMONCON2            Char(3)    Pos(837);
+     INDDOMCARCRE2         Char(1)    Pos(840);
+     INDTAREMV             Char(1)    Pos(841);
+     CODPERFILEMV          Char(11)   Pos(842);
+     INDLIMUNI             Char(1)    Pos(853);
+     INDESTTAREXT          Char(1)    Pos(854);
+   End-DS;        
+
+   Dcl-DS wsclcldir        Len(360);
+     NUMSEC_C              Char(3);
+     TIPDIRECC             Char(2);
+     DESTIPDIRECC          Char(30);
+     TIPLOCAL_C            Char(2);
+     CODPAISDIR            Char(3);
+     CODREGION_C           Char(3);
+     CODPROV_C             Char(2);
+     DESPROV               Char(30);
+     POBLACION_C           Char(35);
+     TIPVIA_C              Char(2);
+     NOMVIA_C              Char(40);
+     NUMVIA_C              Char(6);
+     EMPRESA_C             Char(3);
+     CENTRO_C              Char(4);
+     DEPARTAM_C            Char(4);
+     EDIFICIO_C            Char(4);
+     ESCALERA_C            Char(4);
+     PISO_C                Char(4);
+     PUERTA_C              Char(4);
+     RESTODIR_C            Char(40);
+     CODPOSTAL_C           Char(10);
+     CODAPTCOR_C           Char(10);
+     INDENVCOR_C           Char(1);
+     CODICEGEO             Char(1);
+     INDNORPOB             Char(1);
+     INDNORVIA             Char(1);
+     CODVIA                Char(6);
+     CODMUNPIO             Char(3);
+     CODENTCOL             Char(2);
+     CODENTSIN             Char(2);
+     CODNUCLEO             Char(2);
+     FECALTA_C             Char(10);
+     FECBAJA               Char(10);
+     CONTCUR               Char(26);
+     VIACOMP               Char(50);
+   End-DS;        
+
+   Dcl-DS *N;        
+     WFechaW               Char(8)    Pos(1);
+     aaaa1                 Char(4)    Pos(1);
+     mm1                   Char(2)    Pos(5);
+     dd1                   Char(2)    Pos(7);
+   End-DS;        
+
+   Dcl-DS *N;        
+     WFechaWs2             Char(10)   Pos(1);
+     DIA1                  Char(2)    Pos(1);
+     gI1                   Char(1)    Pos(3) Inz('-');
+     MES1                  Char(2)    Pos(4);
+     gI2                   Char(1)    Pos(6) Inz('-');
+     ANO1                  Char(4)    Pos(7);
+   End-DS;        
+
+   Dcl-DS *N;        
+     WFechaWs              Char(10)   Pos(1);
+     dd                    Char(2)    Pos(1);
+     g1                    Char(1)    Pos(3) Inz('-');
+     mm                    Char(2)    Pos(4);
+     g2                    Char(1)    Pos(6) Inz('-');
+     aaaa                  Char(4)    Pos(7);
+   End-DS;        
+
+   Dcl-DS *N;        
+     WFechaSW              Char(4)    Pos(1);
+     DIAC                  Char(2)    Pos(1);
+     MESC                  Char(2)    Pos(3);
+   End-DS;        
+
+   Dcl-DS *N;        
+     Wdatciu               Char(10)   Pos(1);
+     wresto                Char(2)    Pos(1);
+     wscodprov             Zoned(2:0) Pos(3);
+     wscodregion           Zoned(3:0) Pos(5);
+     wscodreg              Zoned(3:0) Pos(8);
+   End-DS;        
+
+   Dcl-PR existeClie       nteEnSat  extpgm('TDBSRV0032');
+     CODENT                Char(4);
+     OFICINA               Char(4);
+     PTipoId               Char(03);
+     PPNumeroId            Char(22);
+     IDENCLI               Char(08);
+     pp_reto               Char(3);
+     pp_desc               Char(200);
+   End-PR;        
+
+   Dcl-PR ModificarT       arjeta  extpgm('TDBSRV0031');
+     CODENT                Char(4);
+     OFICINA               Char(4);
+     PAN                   Char(22);
+     pp_reto               Char(3);
+     pp_desc               Char(200);
+   End-PR;
+                                                                           
+                                                                           
+   Dcl-PR SERVISDATAQN;
+     PDtaInt               Char(3000);
+     PDtaOut               Char(10000);
+     pWebSer               Char(10);
+     PTipoId               Char(3);
+     PNumeroId             Char(17);
+     PTarjeta              Char(16);
+     PErr                  Char(1);
+     Oficina               Char(4);
+     Paginable             Char(4);
+   End-PR;
+                                                                           
+   Dcl-S p$id              Char(22);
+   Dcl-S pIDENCLI          Char(08);
+   Dcl-S PDtaInt           Char(3000);
+   Dcl-S pDtaOut           Char(10000);
+   Dcl-S pWebSer           Char(10);
+   Dcl-S pTipoId           Char(3);
+   Dcl-S pNumeroId         Char(17);
+   Dcl-S pTarjeta          Char(16);
+   Dcl-S pErr              Char(1);
+   Dcl-S Oficina           Char(4);
+   Dcl-S Paginable         Char(4);
+   Dcl-DS marcaTipo;
+     w_marca               Zoned(2:00);
+     w_tipo                Zoned(2:00);
+   Dcl-PR extraerMarcaTipo Char(4);
+     *N                    Char(22);
+   End-PR;
+    
+   dcl-pi;
                                                                                 
-     D                 DS                                                       
-     DWsClalper                1   1733                                         
-     DCODENT                   1      4A                                        
-     DTIPDOCCLA                5      7A                                        
-     DNUMDOC                   8     29A                                        
-     DFECDOC                  30     39A                                        
-     DTIPPER                  40     40A                                        
-     DESTPER                  41     41A                                        
-     DFECESTCLA               42     51A                                        
-     DTIPCLIEN                52     53A                                        
-     DSUBTIPCLI               54     55A                                        
-     DCODIDIOMA               56     57A                                        
-     DBLOQUEO                 58     58A                                        
-     DINDREPOS                59     59A                                        
-     DCNAE                    60     64A                                        
-     DCODCIRBER               65     86A                                        
-     DCLAVEACCR               87    126A                                        
-     DSITCLAVER              127    128A                                        
-     DNIVSEGCER              129    129A                                        
-     DPUBLICIDAD             130    130A                                        
-     DINDVIPCER              131    131A                                        
-     DNOMBRECER              132    171A                                        
-     DNOMLARGOR              172    201A                                        
-     DAPELLI1ER              202    237A                                        
-     DAPELLI2ER              238    273A                                        
-     DAPELARGOR              274    323A                                        
-     DCODPAISNCT             324    326S 0                                      
-     DCODPAISNAC             327    329A                                        
-     DCODPAISRES             330    332A   Inz('170')                           
-     DSEXPER                 333    333A                                        
-     DFECNAC                 334    343S 0                                      
-     DINDESTCIV              344    344A                                        
-     DREGECON                345    345A                                        
-     DINDTRACOR              346    347A                                        
-     DCODPROF                348    350A                                        
-     DFECFELICITA            351    354A                                        
-     DTIPFELICITA            355    355A                                        
-     DNOMCOR                 356    395A                                        
-     DRAZSOC                 396    495A                                        
-     DFORJUR                 496    503A                                        
-     DFECCREA                504    513A                                        
-     DCODPAISEMP             514    516A   Inz                                  
-     DCODACT                 517    520S 0 Inz(0)                               
-     DNUMEMPLEA              521    527S 0 Inz(0)                               
-     DNUMSUCURS              528    534S 0 Inz(0)                               
-     DINDNIVIMP              535    536A                                        
-     DGRUPBE                 537    558A                                        
-     DSECCIRBE               559    559A                                        
-     DTIPSECCIR              560    560A                                        
-     DCODSWIFT               561    582A                                        
-     DCODISIN                583    604A                                        
-     DTIPLOCAL               605    606A                                        
-     Dcodpaisd               607    609S 0                                      
-     DCODREGION              610    612S 0                                      
-     DCODPROV                613    614S 0                                      
-     DPOBLACION              615    649A                                        
-     DTIPVIA                 650    651A                                        
-     DNOMVIA                 652    691A                                        
-     DNUMVIA                 692    697A                                        
-     DEDIFICIO               698    701A                                        
-     DESCALERA               702    705A                                        
-     DPISOL                  706    709A                                        
-     DPUERTA                 710    713A                                        
-     DRESTODIR               714    753A                                        
-     DCODPOSTAL              754    763A                                        
-     DCODAPTCOR              764    773A                                        
-     DEMPRESA                774    776A                                        
-     DCENTRO                 777    780A                                        
-     DDEPARTAM               781    784A                                        
-     DREFPER                 785    806A                                        
-     DINDENVCOR              807    807A                                        
-     DTIPMEDIO1              808    809A                                        
-     DCARACTER1              810    810A                                        
-     DDESCLAVE1              811    910A                                        
-     DTIPMEDIO2              911    912A                                        
-     DCARACTER2              913    913A                                        
-     DDESCLAVE2              914   1013A                                        
-     DTIPMEDIO3             1014   1015A                                        
-     DCARACTER3             1016   1016A                                        
-     DDESCLAVE3             1017   1116A                                        
-     DTIPMEDIO4             1117   1118A                                        
-     DCARACTER4             1119   1119A                                        
-     DDESCLAVE4             1120   1219A                                        
-     DTIPMEDIO5             1220   1221A                                        
-     DCARACTER5             1222   1222A                                        
-     DDESCLAVE5             1223   1322A                                        
-     DTIPMEDIO6             1323   1324A                                        
-     DCARACTER6             1325   1325A                                        
-     DDESCLAVE6             1326   1425A                                        
-     DOBSERVACION           1426   1725A                                        
-     DIDENTCLI              1726   1733A                                        
+     dcl-s  $tipdoc    char(2);       2            
+     C                   Parm                    $id              17            
+     C                   Parm                    $codsis           3            
+     C                   Parm                    $codpro           3            
+     C                   Parm                    $pTarjeta        22            
+     C                   Parm                    $Marca            2            
+     C                   Parm                    $Tipo             2            
+     C                   Parm                    $Nombre          35            
+     C                   Parm                    fecha_Vence       6            
+     C                   Parm                    error_ws                       
+     C                   Parm                    deserr_ws                      
+     C                   Parm                    Oficina                        
+     C                   Parm                    Paginable                      
                                                                                 
-     D                 DS                                                       
-     DWsAdalcon                1    854                                         
-     DCODENT_A                 1      4A                                        
-     DCENTALTA                 5      8A                                        
-     DPRODUCTO                 9     10A                                        
-     DSUBPRODU                11     14A                                        
-     DCONPROD                 15     17A                                        
-     DCODCONVEN               18     21A                                        
-     DCODPROMO                22     24A                                        
-     DNUMPER                  25     32A                                        
-     DNUMPERVAL               33     40A                                        
-     DINDCTAEMP               41     41A                                        
-     DINDNOMEMP               42     42A                                        
-     DNOMBREEMP               43     72A                                        
-     DCODREGIMEN              73     76A                                        
-     DFORPAGO                 77     78A                                        
-     DINDSITCTA               79     79A                                        
-     DGRUPOLIQ                80     81A                                        
-     DGRUPOCUO                82     83A                                        
-     DOFIVEN                  84     87A                                        
-     DCLAMON1                 88     90A                                        
-     DLIMCRECTA1IMP           91    107A                                        
-     DLIMCRECTAG1            108    124A                                        
-     DIMPFPAGOA1             125    141A                                        
-     DPORPAGOA1              142    148A                                        
-     DLIMCRECOM1             149    165A                                        
-     DLIMCRECOMG1            166    182A                                        
-     DCLAMON2                183    185A                                        
-     DLIMCRECTA2IMP          186    202A                                        
-     DLIMCRECTAG2            203    219A                                        
-     DIMPFPAGOA2             220    236A                                        
-     DPORPAGOA2              237    243A                                        
-     DLIMCRECOM2             244    260A                                        
-     DLIMCRECOMG2            261    277A                                        
-     DIBAN1                  278    281A                                        
-     DCTACARGO1              282    311A                                        
-     DCLAMONCON1             312    314A                                        
-     DINDDOMCARCRE           315    315A                                        
-     DCODFORMATO             316    325A                                        
-     DIBANDOM1               326    329A                                        
-     DCTADOMTAR1             330    359A                                        
-     DMONCTATAR1             360    362A                                        
-     DIBANDOM2               363    366A                                        
-     DCTADOMTAR2             367    396A                                        
-     DMONCTATAR2             397    399A                                        
-     DINDACTLIMTAR           400    400A                                        
-     DNUMPERTAR              401    408A                                        
-     DCALPARTTAR             409    410A                                        
-     DINDTIPTTAR             411    412A                                        
-     DCODMARTAR              413    414A                                        
-     DNOMBENREDTAR           415    449A                                        
-     DIDEMPLEADOTAR          450    469A                                        
-     DPANASOCTAR             470    491A                                        
-     DCODBARRASTAR           492    505A                                        
-     DREFFOTOTAR             506    535A                                        
-     DESTPLASTAR1            536    575A                                        
-     DESTPLASTAR2            576    615A                                        
-     DINDENVESTTAR           616    616A                                        
-     DCENTROESTTAR           617    620A                                        
-     DINDENVPINTAR           621    621A                                        
-     DCENTROPINTAR           622    625A                                        
-     DINDESTTAROL            626    626A                                        
-     DINDIMPPINOL            627    627A                                        
-     DCONDESTTAR             628    630A                                        
-     DCODPROMOTAR            631    633A                                        
-     DCLAMON1TAR             634    636A                                        
-     DLIMDIACAJ1TAR          637    653A                                        
-     DMAXDIACAJ1TAR          654    659A                                        
-     DCLAMON2TAR             660    662A                                        
-     DLIMDIACAJ2TAR          663    679A                                        
-     DMAXDIACAJ2TAR          680    685A                                        
-     DCUENTA                 686    697A                                        
-     DDESCLAMON              698    717A                                        
-     DFECALTA                718    727A                                        
-     DPANTAR                 728    749A                                        
-     DFECALTATAR             750    759A                                        
-     DFECCADTAR              760    765A                                        
-     DDESMARRED              766    775A                                        
-     DDESTIPTRED             776    785A                                        
-     DINDSITTAR              786    787A                                        
-     DCODUSO                 788    789A                                        
-     DNUMSEC                 790    801A                                        
-     DINDEXECUO              802    802A                                        
-     DIBAN2                  803    806A                                        
-     DCTACARGO2              807    836A                                        
-     DCLAMONCON2             837    839A                                        
-     DINDDOMCARCRE2          840    840A                                        
-     DINDTAREMV              841    841A                                        
-     DCODPERFILEMV           842    852A                                        
-     DINDLIMUNI              853    853A                                        
-     DINDESTTAREXT           854    854A                                        
-                                                                                
-     Dwsclcldir        DS           360                                         
-     DNUMSEC_C                        3                                         
-     DTIPDIRECC                       2                                         
-     DDESTIPDIRECC                   30                                         
-     DTIPLOCAL_C                      2                                         
-     DCODPAISDIR                      3                                         
-     DCODREGION_C                     3                                         
-     DCODPROV_C                       2                                         
-     DDESPROV                        30                                         
-     DPOBLACION_C                    35                                         
-     DTIPVIA_C                        2                                         
-     DNOMVIA_C                       40                                         
-     DNUMVIA_C                        6                                         
-     DEMPRESA_C                       3                                         
-     DCENTRO_C                        4                                         
-     DDEPARTAM_C                      4                                         
-     DEDIFICIO_C                      4                                         
-     DESCALERA_C                      4                                         
-     DPISO_C                          4                                         
-     DPUERTA_C                        4                                         
-     DRESTODIR_C                     40                                         
-     DCODPOSTAL_C                    10                                         
-     DCODAPTCOR_C                    10                                         
-     DINDENVCOR_C                     1                                         
-     DCODICEGEO                       1                                         
-     DINDNORPOB                       1                                         
-     DINDNORVIA                       1                                         
-     DCODVIA                          6                                         
-     DCODMUNPIO                       3                                         
-     DCODENTCOL                       2                                         
-     DCODENTSIN                       2                                         
-     DCODNUCLEO                       2                                         
-     dFECALTA_C                      10                                         
-     DFECBAJA                        10                                         
-     DCONTCUR                        26                                         
-     DVIACOMP                        50                                         
-                                                                                
-     D                 DS                                                       
-     DWFechaW                  1      8                                         
-     Daaaa1                    1      4A                                        
-     Dmm1                      5      6A                                        
-     Ddd1                      7      8A                                        
-                                                                                
-     D                 DS                                                       
-     DWFechaWs2                1     10                                         
-     DDIA1                     1      2A                                        
-     DgI1                      3      3A   Inz('-')                             
-     DMES1                     4      5A                                        
-     DgI2                      6      6A   Inz('-')                             
-     DANO1                     7     10A                                        
-                                                                                
-     D                 DS                                                       
-     DWFechaWs                 1     10                                         
-     Ddd                       1      2A                                        
-     Dg1                       3      3A   Inz('-')                             
-     Dmm                       4      5A                                        
-     Dg2                       6      6A   Inz('-')                             
-     Daaaa                     7     10A                                        
-                                                                                
-     D                 DS                                                       
-     DWFechaSW                 1      4                                         
-     DDIAC                     1      2A                                        
-     DMESC                     3      4A                                        
-                                                                                
-     D                 DS                                                       
-     DWdatciu                  1     10                                         
-     Dwresto                   1      2A                                        
-     Dwscodprov                3      4S 0                                      
-     Dwscodregion              5      7S 0                                      
-     Dwscodreg                 8     10S 0                                      
-                                                                                
-     d existeClienteEnSat...                                                    
-     d                 pr                  extpgm('TDBSRV0032')                 
-     d CODENT                         4A                                        
-     d OFICINA                        4A                                        
-     d PTipoId                       03A                                        
-     d PPNumeroId                    22A                                        
-     d IDENCLI                       08A                                        
-     d pp_reto                        3A                                        
-     d pp_desc                      200A                                        
-                                                                                
-     d ModificarTarjeta...                                                      
-     d                 pr                  extpgm('TDBSRV0031')                 
-     d CODENT                         4A                                        
-     d OFICINA                        4A                                        
-     d PAN                           22A                                        
-     d pp_reto                        3A                                        
-     d pp_desc                      200A                                        
+        cod_sis = %int($codsis);
+        cod_pro = %int($codpro);
+        PTarjeta = %SubSt($pTarjeta:4:16);
+        vlr_cup = 0;
                                                                                 
                                                                                 
-     D SERVISDATAQN    PR                                                       
-     DPDtaInt                      3000A                                        
-     DPDtaOut                     10000A                                        
-     DpWebSer                        10A                                        
-     DPTipoId                         3A                                        
-     DPNumeroId                      17A                                        
-     DPTarjeta                       16A                                        
-     DPErr                            1A                                        
-     dOficina                         4A                                        
-     dPaginable                       4A                                        
-                                                                                
-     dp$id             s             22A                                        
-     dpIDENCLI         s             08A                                        
-     DPDtaInt          S           3000A                                        
-     DpDtaOut          S          10000A                                        
-     DpWebSer          S             10A                                        
-     DpTipoId          S              3A                                        
-     DpNumeroId        S             17A                                        
-     DpTarjeta         S             16A                                        
-     DpErr             S              1A                                        
-     dOficina          s              4A                                        
-     dPaginable        s              4A                                        
-     dmarcaTipo        ds                                                       
-     d w_marca                        2s00                                      
-     d w_tipo                         2s00                                      
-     d extraerMarcaTipo...                                                      
-     d                 pr             4                                         
-     d                               22                                         
-      *----------------------------------------------------------------****     
-      /free                                                                     
+     CSR                 EndSr                                                  
+   end-pi;
                                                                                 
           chain(n) (%int($id)) climael01;                                       
           if not (%found(climael01));                                           
@@ -402,10 +434,7 @@
                                                                                 
           *inlr = *on;                                                          
                                                                                 
-      /end-free                                                                 
-      *----------------------------------------------------------------****     
-      * @ADALCON : Creacion de contrato                                         
-      /free                                                                     
+      //  @ADALCON : Creacion de contrato                                         
         begsr @adalcon;                                                         
                                                                                 
           exsr @inf_adalcon;                                                    
@@ -1876,32 +1905,4 @@
      c                   endif                                                  
                                                                                 
      c                   endsr                                                  
-      *----------------------------------------------------------------****     
-      * INZSR : Subrutina inicial del programa                                  
-     CSR   *InzSr        BegSr                                                  
-                                                                                
-      * Define parametros de entrada                                            
-                                                                                
-     C     *Entry        Plist                                                  
-     C                   Parm                    $tipdoc           2            
-     C                   Parm                    $id              17            
-     C                   Parm                    $codsis           3            
-     C                   Parm                    $codpro           3            
-     C                   Parm                    $pTarjeta        22            
-     C                   Parm                    $Marca            2            
-     C                   Parm                    $Tipo             2            
-     C                   Parm                    $Nombre          35            
-     C                   Parm                    fecha_Vence       6            
-     C                   Parm                    error_ws                       
-     C                   Parm                    deserr_ws                      
-     C                   Parm                    Oficina                        
-     C                   Parm                    Paginable                      
-                                                                                
-     c                   eval      cod_sis = %int($codsis)                      
-     c                   eval      cod_pro = %int($codpro)                      
-     c                   eval      PTarjeta = %SubSt($pTarjeta:4:16)            
-     c                   eval      vlr_cup = 0                                  
-                                                                                
-                                                                                
-     CSR                 EndSr                                                  
-**end-free
+ 
