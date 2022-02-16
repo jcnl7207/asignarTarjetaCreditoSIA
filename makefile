@@ -2,7 +2,7 @@
 BIN_LIB=CMPSYS
 LIBLIST=$(BIN_LIB) FINCLIDAT
 SHELL=/QOpenSys/usr/bin/qsh
-
+ 
 all: tdbsrv0035.sqlrpgle
 
 %.sqlrpgle:
