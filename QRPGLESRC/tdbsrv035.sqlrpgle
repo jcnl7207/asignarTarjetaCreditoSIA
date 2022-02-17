@@ -1,4 +1,4 @@
-      *****************************************************************          
+      *****Paisa************************************************************          
       * Programa. . . : SATCREPN                                                
       * Descripcion . : Creaci�n de Cliente natural y contrato                  
       *                 al interior del aplicativo SAT                          
@@ -1674,7 +1674,7 @@
               BLOQUEO    =  'N'         ;                                       
               INDREPOS   =  'N'         ;                                       
               NIVSEGCER  =  '0'         ;                                       
-              PUBLICIDAD =  'N'         ;                                       
+              PUBLICIDAD =  'N'         ;   
               INDVIPCER  =  'N'         ;                                       
               TIPLOCAL   =  'DP'        ;                                       
               codpaisd   =  170         ;                                       
