@@ -1,4 +1,4 @@
-     *****************************************************************          
+      *****************************************************************          
       * Programa. . . : SATCREPN                                                
       * Descripcion . : Creaci�n de Cliente natural y contrato                  
       *                 al interior del aplicativo SAT                          
@@ -17,7 +17,8 @@
      Fsatmartip if   e           k Disk    prefix(e_)                           
      Fsatparam  if   e           k Disk    prefix(t_)                           
                                                                                 
-      *----------------------------------------------------------------****     
+      *----------------------------------------------------------------****   
+     D SalirDelCiclo   s               n   
      D ind_cli         s              1s 0                                      
      DNIT2             s             17S 0 Inz(0)                               
      DCLIDES           s              5A                                        
@@ -43,7 +44,8 @@
      Dapellidos        S             40A                                        
      Dnombres          S             40A                                        
      Dpp_retorno       S              3A                                        
-     Dpp_descRetorno   S            200A                                        
+     Dpp_descRetorno   S            200A  
+     D$Cupo            S             15s02                          
                                                                                 
      D                 DS                                                       
      DWsClalper                1   1733                                         
@@ -1314,15 +1316,23 @@
            Else;                                                                
               w_MARCA = %Dec($Marca:2:0);                                       
               w_TIPO  = %Dec($Tipo:2:0);                                        
-           EndIf;                                                               
-           chain(n) (cod_sis:cod_pro) satcattar;                                
-           if (%found);                                                         
-              PRODUCTO   = d_CODPROSAT;                                         
-              SUBPRODU   = d_CODSUBSAT;                                         
-              INDTIPTTAR = %xlate(' ':'0':%editc(w_TIPO:'3'));                  
-              CODMARTAR  = %xlate(' ':'0':%editc(w_MARCA:'3'));                 
-           endif;                                                               
-                                                                                
+           EndIf;  
+
+           setll (cod_sis:cod_pro) rcattar;  
+           Dow Not %EOF(satcattar) and SalirDelCiclo = *Off;
+               ReadE (cod_sis:cod_pro) rcattar;                                
+               if Not %EOF;  
+                   If $Cupo >= d_VLRMINIMO and 
+                      $Cupo <= d_VLRMAXIMO;                                                      
+                      PRODUCTO   = d_CODPROSAT;                                         
+                      SUBPRODU   = d_CODSUBSAT;                                         
+                      INDTIPTTAR = %xlate(' ':'0':%editc(w_TIPO:'3'));                  
+                      CODMARTAR  = %xlate(' ':'0':%editc(w_MARCA:'3'));                 
+                      SalirDelCiclo = *On;
+                   EndIf;  
+               endif; 
+           EndDo;                                                              
+
            chain (c_numint) clivincli1;                                         
            If %found(clivincli1);                                               
               Chain (82:tIPvIN) RPARAM;                                         
@@ -1895,7 +1905,8 @@
      C                   Parm                    $codpro           3            
      C                   Parm                    $pTarjeta        22            
      C                   Parm                    $Marca            2            
-     C                   Parm                    $Tipo             2            
+     C                   Parm                    $Tipo             2
+     C                   Parm                    $Cupo            
      C                   Parm                    $Nombre          35            
      C                   Parm                    fecha_Vence       6            
      C                   Parm                    error_ws                       

@@ -1,9 +1,9 @@
 
 BIN_LIB=CMPSYS
-LIBLIST=$(BIN_LIB)
+LIBLIST=$(BIN_LIB) FINCLIDAT FINCOODAT FINCOOOBJ 
 SHELL=/QOpenSys/usr/bin/qsh
 
-all: tdbsrv0035.sqlrpgle
+all: tdbsrv035.sqlrpgle
 
 %.rpgle:
 	system -s "CHGATR OBJ('./QRPGLESRC/$*.rpgle') ATR(*CCSID) VALUE(1252)"
