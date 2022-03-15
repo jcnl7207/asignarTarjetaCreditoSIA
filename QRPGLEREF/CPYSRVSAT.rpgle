@@ -1,0 +1,34 @@
+       // Inicio Servicio SAT.
+       dcl-pr llamarPrograma   extpgm('WSCL00009');
+           dcl-Parm p_entidad        Char(20);
+           dcl-Parm p_idioma         Char(20);
+           dcl-Parm p_oficina        Char(20);
+           dcl-Parm p_paginable      Char(20);
+           dcl-Parm p_transaccion    Char(20);
+           dcl-Parm p_tipoOperacion  Char(20);
+           dcl-Parm p_Parametros_i   likeds(Param_t) Dim(200);
+           dcl-Parm Ocurrencias_i    zoned(4:0);
+           dcl-Parm p_Parametros_o   likeds(Param_t) Dim(200);
+           dcl-Parm Ocurrencias_o    zoned(4:0);
+           dcl-Parm retorno          zoned(3:0);
+           dcl-Parm descRetorno      char(200);
+           dcl-Parm p_TimesTamp      Timestamp const options(*nopass);
+       end-pr;
+       dcl-s  p_entidad          char(20);
+       dcl-s  p_idioma           char(20);
+       dcl-s  p_oficina          char(20);
+       dcl-s  p_paginable        char(20);
+       dcl-s  p_transaccion      char(20);
+       dcl-s  p_tipoOperacion    char(20);
+       dcl-ds p_Parametros_i     likeds(Param_t) Dim(200);
+       dcl-s  Ocurrencias_i      zoned(4:0);
+       dcl-ds p_Parametros_o     likeds(Param_t) Dim(200);
+       dcl-s  Ocurrencias_o      zoned(4:0);
+       dcl-s  retorno            zoned(3:0);
+       dcl-s  descRetorno        char(200);
+       dcl-s  p_TimesTamp        Timestamp;
+       dcl-ds Param_t   qualified template;
+              Nombre             char(20);
+              Valor              char(128);
+       end-ds;
+       // Inicio Servicio SAT.
