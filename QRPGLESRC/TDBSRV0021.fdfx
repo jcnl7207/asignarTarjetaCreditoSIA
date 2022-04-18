@@ -1,0 +1,15 @@
+[Data Transfer File Description]
+FieldCount=1
+FileType=14
+ClientFileEncoding=UTF-8
+DataTransferVersion=1.0
+[Options]
+DateFormat=1
+DateSep=1
+DcmlSep=2
+TimeFormat=1
+TimeSep=1
+[F0001]
+Length=208
+Name=SRCDTA
+Type=1

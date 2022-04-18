@@ -1,7 +1,8 @@
 **Free
   ctl-opt DFTACTGRP(*NO);
-  Dcl-F CliMaeL01 Usage(*Input) Keyed PreFix('C_');
   Dcl-F SatCreLog Usage(*input: *output) Keyed;
+  Dcl-F CliMaeL01 Usage(*Input) Keyed PreFix('C_');
+  
   
   Dcl-DS $DsRcd  Extname('FINPLTDAT/PLTCTACUP');
   End-DS;
@@ -14,7 +15,7 @@
 
   Dcl-S  $RcdNw       Char(1500);
   Dcl-S  $RcdOr                  Like($RcdNw);
-  Dcl-S  wTipDoc     Char(3);
+  Dcl-S  wTipDoc     Char(2);
   Dcl-S  $tipdoc     Char(2);
   Dcl-S  $pTarjet    Char(19);
   Dcl-S  $Marca      Char(2);
@@ -28,6 +29,9 @@
   Dcl-S  p_TimesTamp timesTamp;
   Dcl-s  SW_EXISTE   Ind; 
   dcl-s IndNull      BinDec(4:0); 
+  dcl-s $Nit         zoned(17:0);
+  dcl-s $VlrCup      zoned(13:2);
+  dcl-s TipoCliente  char(1);
 
   Dcl-DS $Parm1a;
     $File          Char(10)   Pos(1);
@@ -56,25 +60,27 @@
 
   Dcl-PR solicitarTarjeta  extpgm('TCSAT0045');
     $tipdoc        Char(2);
-    $id            like(nitcta);
+    $id            like($nit);
     $codsis        like(codsis);
     $codpro        like(codpro);
     $pTarjet       Char(19);
     $Marca         Char(2);
     $Tipo          Char(2);
-    $Cupo          like(vlrcup);
+    $Cupo          like($vlrcup);
     $Nombre        Char(35);
     error_ws       Char(7);
     deserr_w       Char(104);
     Oficina        Char(4);
     $UsrUac        like(UsrUac); 
     p_TimeSatmp    timesTamp;
+    TipoCliente    char(1);
   End-PR;
 
 
   dcl-pi *N;
-    $Parm1  LikeDs($Parm1a);
+    $Parm1 char(2500);
   end-pi;
+  $Parm1a = $Parm1;
   if  $Evento = '1';
       $RcdNw = *blanks;
       IF $DesRcdNw>0 and $LenRcdNw>0;
@@ -94,6 +100,11 @@
           From FinCooDat/SatSisProN
           Where Sistema = :CODSIS and 
                 Producto = :CodPro;
+          If sw_existe;
+            TipoCliente = '0';
+          EndIf;
+      Else;
+        TipoCliente = '2';
       EndIf;
       If sw_existe;
         @Move01();
@@ -106,35 +117,40 @@
   dcl-proc @Move01;
     
     CHAIN NitCta CliMaeL01;
-    wTipDoc = '0' + %xlate(' ':'0':%editc(c_tipdoc:'3'));
+    wTipDoc = %xlate(' ':'0':%editc(c_tipdoc:'3'));
     p_TimesTamp = %TimeStamp();
+    $Nit = c_NitCli;
+    $VlrCup = VlrCup;
     EscribirLog();
-    Monitor;
+    Oficina = '0001';
+    // Monitor;
     solicitarTarjeta(wTipDoc            :   
-                    NitCta              :
+                    $Nit                :
                     CodSis              : 
                     CodPro              :
                     $pTarjet            : 
                     $Marca              :
                     $Tipo               : 
-                    VlrCup              :
+                    $VlrCup             :
                     $Nombre             : 
                     error_ws            :
                     deserr_ws           : 
                     Oficina             :
                     UsrUac              :
-                    p_TimesTamp);
+                    p_TimesTamp         :
+                    TipoCliente);
       EscribirLog();
-    on-error *all;
-      error_ws    = '9999';    
-      deserr_ws   = 'Error al llamar programa TCSAT0045'; 
-      EscribirLog();
-    endmon;
+    // on-error *all;
+    //  error_ws    = '9999';    
+    //  deserr_ws   = 'Error al llamar programa TCSAT0045'; 
+    //  EscribirLog();
+    // endmon;
   end-proc;
  
   dcl-proc escribirLog;
     Instante    = p_TimeStamp;
-    tipdoc      = $tipdoc;       
+    tipdoc      = wTipDoc;   
+    id          = $Nit;    
     pTarjeta    = $pTarjet;    
     Marca       = $Marca;      
     Tipo        = $Tipo;    

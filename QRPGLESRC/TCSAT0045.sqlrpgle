@@ -16,6 +16,7 @@
      Fsatcattar if   e           k Disk    prefix(d_)
      Fsatmartip if   e           k Disk    prefix(e_)
      Fsatparam  if   e           k Disk    prefix(t_)
+     FSATADMCUP UF A E           K Disk    prefix(u_)                     
       *----------------------------------------------------------------****
      D SalirDelCiclo   s               n
      D ind_cli         s              1s 0
@@ -39,13 +40,13 @@
      Ddoc_txt          S             17A
      Dcod_sis          S              3s 0 inz
      Dcod_pro          S              3s 0 inz
-     Dvlr_cup          S             13s 0 inz
      dnombre120        s            120a   inz
      Dapellidos        S             40A
      Dnombres          S             40A
      Dpp_retorno       S              3A
      Dpp_descRetorno   S            200A
-     D$Cupo            S             15s02
+     D$Cupo            S             13s02
+     dw_$Cupo          S             13S02
      D                 DS
      DWsClalper                1   1733
      DCODENT                   1      4A
@@ -302,6 +303,7 @@
      d IDENCLI                       08A
      d pp_reto                        3A
      d pp_desc                      200A
+
      d ModificarTarjeta...
      d                 pr                  extpgm('TDBSRV0031')
      d CODENT                         4A
@@ -309,6 +311,27 @@
      d PAN                           22A
      d pp_reto                        3A
      d pp_desc                      200A
+
+     d cambiarEstadoTarjeta...
+     d                 pr                  extpgm('DBSRV0021')
+     d pp_entidad                     4A
+     d pp_oficina                     4A
+     d pp_CODBLQ                      2A
+     d pp_INDBLQ                      1A
+     d pp_TEXBLQ                     30A
+     d pp_pan                        19A
+     d pp_estado                      1A
+     d pp_retorno                     3A
+     d pp_descRetorno               200A
+
+     d pp_entidad      S              4A
+     d pp_oficina      S              4A
+     d pp_CODBLQ       S              2A
+     d pp_INDBLQ       S              1A
+     d pp_TEXBLQ       S             30A
+     d pp_pan          S             19A
+     d pp_estado       S              1A
+
      D SERVISDATAQN    PR
      DPDtaInt                      3000A
      DPDtaOut                     10000A
@@ -582,15 +605,28 @@
              endif;
              deserr_ws = %subst(pDtaOut:50:pos1);
           else;
-             wsadalcon = pDtaOut ;
-             $pTarjeta   = '000' + %Trim(PANTAR);
-           // ModificarTarjeta(
-           //      CODENT          :
-           //      OFICINA         :
-           //      PANTAR          :
-           //      pp_retorno      :
-           //      pp_descRetorno
-           //  );
+            wsadalcon = pDtaOut ;
+            $pTarjeta   = '000' + %Trim(PANTAR);
+            If tipoCliente = '2';
+               pp_entidad     = codent;
+               pp_oficina     = centalta; 
+               pp_CODBLQ      = '21';
+               pp_INDBLQ      = ' ';
+               pp_TEXBLQ      = 'Tarjeta Virtual'; 
+               pp_pan         = PANTAR;
+               pp_estado      = 'Z';
+               pp_retorno     = '000'; 
+               pp_descRetorno = ' ';
+               cambiarEstadoTarjeta(pp_entidad  :    
+                                    pp_oficina  :   
+                                    pp_CODBLQ   :   
+                                    pp_INDBLQ   :   
+                                    pp_TEXBLQ   :    
+                                    pp_pan      :   
+                                    pp_estado   :   
+                                    pp_retorno  :   
+                                    pp_descRetorno);
+            EndIf; 
           endif;
           parmws = ' ';
           parmws =%trim(parmws) + CODENT;
@@ -751,6 +787,23 @@
           parmws =%Trim(parmws) + ';'  ;
           parmws =%trim(parmws) + INDESTTAREXT;
           nom_ser = 'ADALCON';
+          u_NIT         = c_NitCli;    
+          u_IDBENEF     = c_NitCli;
+          u_NUMTAR      = %Dec(PANTAR:16:0);
+          u_VLRCUPO     = $Cupo;
+          u_CENTALTA    = CENTALTA;
+          u_CUENTA      = CUENTA;
+          u_SISTEMA     = %Dec($CodSis:3:0);
+          u_PRODUCTO    = %Dec($CodPro:3:0);
+          u_ESTADOTAR   = 'V';
+          u_MARCA       = %Dec(CODMARTAR:2:0);
+          u_TIPO        = %Dec(INDTIPTTAR:2:0);
+          u_DESPRODUC   = d_DESPROSAT;
+          u_TIPOCONT    = 'TI';
+          u_USUARIO     =  $UsrUac; 
+          u_FECHA       = %Dec(%Char(%Date():*ISO0):8:0); 
+          u_HORA        = %Dec(%Time());
+          Write RADMCUP;                 
           exsr grabar_respta;
         endsr;
       /end-free
@@ -1200,13 +1253,15 @@
            CODCONVEN     = *all' ';
            CODPROMO      = *all' ';
            NUMPERVAL     = *all' ';
-           INDCTAEMP     = '0';
-           INDNOMEMP     = '0';
+           If TipoCliente = '2';
+            INDCTAEMP     = '1';
+           EndIf;
+           INDNOMEMP     = TipoCliente;
            CODREGIMEN    = '0';
-           FORPAGO       = '00';
+           FORPAGO       = '01';
            INDSITCTA     = '0';
            GRUPOCUO      = '01';
-           CLAMON1       = *all' ';
+           CLAMON1       = '170';
            LIMCRECTAG1   = *all' ';
            IMPFPAGOA1    = *all' ';
            PORPAGOA1     = *all' ';
@@ -1222,11 +1277,11 @@
            IBAN1         = *all' ';
            CTACARGO1     = *all' ';
            CLAMONCON1    = *all' ';
-           INDDOMCARCRE  = *all' ';
+           INDDOMCARCRE  = 'N';
            CODFORMATO    = 'STD';
-           IBANDOM1      = '0069';
-           CTADOMTAR1    = '0069000000000000';
-           MONCTATAR1    = '170';
+           IBANDOM1      = *Blanks;
+           CTADOMTAR1    = *Blanks;
+           MONCTATAR1    = *Blanks;
            IBANDOM2      = *all' ';
            CTADOMTAR2    = *all' ';
            MONCTATAR2    = *all' ';
@@ -1237,7 +1292,13 @@
            PANASOCTAR    = pTarjeta;
            CODBARRASTAR  = *all' ';
            REFFOTOTAR    = *all' ';
-           INDENVESTTAR  = 'S';
+
+           If TipoCliente = '0';
+            INDENVESTTAR  = 'S';
+           Else;
+            INDENVESTTAR  = 'N';
+           EndIf;
+
            INDENVPINTAR  = 'N';
            CENTROPINTAR  = *all' ';
            INDESTTAROL   = 'N';
@@ -1252,36 +1313,60 @@
            IBAN2         = *all' ';
            CTACARGO2     = *all' ';
            CLAMONCON2    = *all' ';
-           INDTAREMV     = '2';
+
+           
+           If TipoCliente = '2';
+            INDTAREMV     = '0';
+           Else;
+            INDTAREMV     = '2';
+           EndIf; 
+           
            CODPERFILEMV  = *all' ';
            INDLIMUNI     = 'N';
            INDESTTAREXT  = 'S';
            NUMPER        = %xlate(' ':'0':%editc(x_identcli:'3'));
-           NOMBREEMP     = *all' ';
-        // OFIVEN        = %trim(%editc(c_agcvin:'3'));
-           OFIVEN        = Oficina;
-           LIMCRECTA1IMP = %trim(%editc(vlr_cup:'3'));
+           If TipoCliente = '2';
+            NOMBREEMP     = c_NomCli;
+           Else;
+            NOMBREEMP     = *all' ';
+           EndIf; 
+           if TipoCliente = '2';
+               OFIVEN        = %trim(%editc(c_agcvin:'3'));
+            Else;
+               OFIVEN        = *Blanks;
+            EndIf;
+            if TipoCliente = '2';
+                LIMCRECTA1IMP = '00000000000000100';
+            Else;
+                LIMCRECTA1IMP = %trim(%editc($Cupo:'3'));
+            EndIf;
+          
         // CENTALTA      = %subst(%xlate(' ':'0':%editc(c_agcvin:'3')):2:4);
            CENTALTA      = Oficina;
+
         // CENTROESTTAR  = %subst(%xlate(' ':'0':%editc(c_agcvin:'3')):2:4);
-           CENTROESTTAR  = Oficina;
+            if TipoCliente = '2';
+                CENTROESTTAR = *Blanks;
+            Else;
+                CENTROESTTAR  = '0505';
+            EndIf;
+           
+           If  cod_sis = 10 and cod_pro = 15;
+               w_$Cupo = 1;
+            Else;
+               w_$Cupo = $Cupo;
+            Endif;
            NumeroTarjeta =%Subst($pTarjeta:4:16);
-           If NumeroTarjeta  > *Blanks;
-              marcaTipo = extraerMarcaTipo(NumeroTarjeta);
-           Else;
-              w_MARCA = %Dec($Marca:2:0);
-              w_TIPO  = %Dec($Tipo:2:0);
-           EndIf;
            setll (cod_sis:cod_pro) rcattar;
            Dow Not %EOF(satcattar) and SalirDelCiclo = *Off;
                ReadE (cod_sis:cod_pro) rcattar;
                if Not %EOF;
-                   If $Cupo >= d_VLRMINIMO and
-                      $Cupo <= d_VLRMAXIMO;
+                   If w_$Cupo >= d_VLRMINIMO and
+                      w_$Cupo <= d_VLRMAXIMO;
                       PRODUCTO   = d_CODPROSAT;
                       SUBPRODU   = d_CODSUBSAT;
-                      INDTIPTTAR = %xlate(' ':'0':%editc(w_TIPO:'3'));
-                      CODMARTAR  = %xlate(' ':'0':%editc(w_MARCA:'3'));
+                      INDTIPTTAR = %xlate(' ':'0':%editc(d_TIPO:'3'));
+                      CODMARTAR  = %xlate(' ':'0':%editc(d_MARCA:'3'));
                       SalirDelCiclo = *On;
                    EndIf;
                endif;
@@ -1295,42 +1380,70 @@
                   Conprod = *Blanks;
                EndIf;
            EndIf;
-            //Por ser tarjeta debito va en blanco. (no obligatorio)
-            GRUPOLIQ = ' ';
-            //Select;
-            //When (c_asocor = 1);
-            //    GRUPOLIQ = '6';
-            // When (c_asocor = 2);
-            //    GRUPOLIQ = '2';
-            // When (c_asocor = 3);
-            //    GRUPOLIQ = '4';
-            //When (c_asocor = 4);
-            //    GRUPOLIQ = '1';
-            //When (c_asocor = 5);
-            //    GRUPOLIQ = '3';
-            //When (c_asocor = 6);
-            //    GRUPOLIQ = '5';
-            //EndSl;
-           If   $Nombre = ' ';
-           exsr @NomEstampa;
+            Select;
+               When (c_asocor = 1);
+                   GRUPOLIQ = '6';
+                When (c_asocor = 2);
+                   GRUPOLIQ = '2';
+                When (c_asocor = 3);
+                   GRUPOLIQ = '4';
+               When (c_asocor = 4);
+                   GRUPOLIQ = '1';
+               When (c_asocor = 5);
+                   GRUPOLIQ = '3';
+               When (c_asocor = 6);
+                   GRUPOLIQ = '5';
+            EndSl;
+           If TipoCliente = '0';
+               exsr @NomEstampa;
            Else;
-              NOMBENREDTAR  = 'Nombre';
+              NOMBENREDTAR  = *Blanks;
            EndIf;
-           ESTPLASTAR1 = %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
-                         %subst(c_nomcli:1:25);
+           
+           If TipoCliente = '0';
+           If c_NomEmp = *Blanks;
+           ESTPLASTAR1 = 
+           %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
+                             %subst(c_nomcli:1:25);
+            Else;
+            ESTPLASTAR1 = 
+            %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
+                             %subst(c_nomemp:1:25);
+            EndIf;
+            Else;
+
+               //Juridico
+            If c_NomEmp = *Blanks;
+            ESTPLASTAR1 = 
+            %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
+                            %subst(c_nomcli:1:25);
+            Else;
+               ESTPLASTAR1 = 
+               %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
+                             %subst(c_nomemp:1:25);
+            EndIf;
+               
+            EndIf;
+
+
+
            ESTPLASTAR2 = INDTIPTTAR + CODMARTAR +'001'+'00'+'001'+'00'+'00'+
                          %subst(%xlate(' ':'0':%editc(c_nitcli:'3')):6:12) +
                          %subst(%xlate(' ':'0':%editc(c_fecing:'3')):5:2) +'-'+
                          %subst(%xlate(' ':'0':%editc(c_fecing:'3')):3:2);
-           chain(n) (w_marca:w_tipo) satmartip;
+           chain(n) (d_marca:d_tipo) satmartip;
            If (%found(satmartip));
               CONDESTTAR = e_CODESTAMP;
               MAXDIACAJ1TAR = %trim(%editc(e_MAXDIACAJ:'3'));
-              If (vlr_cup <= e_LIMDIACAJ);
-                 LIMDIACAJ1TAR = %trim(%editc(vlr_cup:'3'));
-              Else;
-                 LIMDIACAJ1TAR = %trim(%editc(e_LIMDIACAJ:'3'));
-              EndIf;
+              If TipoCliente = '0';
+                  If ($Cupo <= e_LIMDIACAJ);
+                     LIMDIACAJ1TAR = %trim(%editc($Cupo:'3'));
+                  Else;
+                     LIMDIACAJ1TAR = %trim(%editc(e_LIMDIACAJ:'3'));
+                  EndIf;
+               Else;
+                  LIMDIACAJ1TAR = '1';
+               EndIf;
            EndIf;
            exsr @clcldir;
            NUMSEC = NUMSEC_C;
@@ -1588,7 +1701,31 @@
               codpaisd   =  170         ;
               POBLACION  = '0'          ;
               CODPAISNAC = '170'        ;
-              CODPAISEMP =  '  '        ;
+              If TipoCliente = '2'; 
+                 CODPAISEMP =  '170';
+                 Exec Sql
+                 SELECT C.CODNRCO Into :CODPAISEMP :IndNull
+                 FROM FINCLIDAT/CLIMAE A, 
+                      FINCLIDAT/CLICIUDAD B,
+                      FINCOODAT/MPPAISES C 
+                  WHERE A.LUGCON = B.CODCIU AND B.CODPAI =   
+                        C.CODALFA AND A.NITCLI = :c_NitCli                               
+                  FETCH FIRST 1 ROWS ONLY; 
+                  INDNIVIMP  =  '01'; 
+                  Exec Sql
+                  SELECT 
+                  Case When
+                     B.NATEMP in (5, 7, 9) then '02'
+                     Else '01' 
+                  End Into :INDNIVIMP :IndNull
+                  FROM FINCLIDAT/CLIMAE A, FINCLIDAT/CLImaebco B 
+                  WHERE a.numint = b.numint AND NITCLI = :c_nitcli;              
+                                                        
+              Else;
+               CODPAISEMP =  '  ';
+               INDNIVIMP  =  '';
+              EndIf;
+              
               CODPROF    =  '799'       ;
               INDENVCOR  =  'S'         ;
               CODAPTCOR  =  *all' '     ;
@@ -1597,10 +1734,31 @@
               SITCLAVER  =  *all' '     ;
               APELARGOR  =  *all' '     ;
               INDTRACOR  =  *all' '     ;
-              NOMCOR     =  *all' '     ;
+              If c_tipcli = 1;
+                  NOMCOR     =  c_NomEmp;
+                  CODPROF    =  '   ';
+                  Select;
+                     When c_TIPEMP = 4;
+                        FORJUR     =  'SM';   
+                     When c_TIPEMP = 10;
+                        FORJUR     =  'SA';
+                     When c_TIPEMP = 23;
+                        FORJUR     =  'SA';
+                     When c_TIPEMP = 17;
+                        FORJUR     =  'SL';
+                     When c_TIPEMP = 21;
+                        FORJUR     =  'SC';
+                     When c_TIPEMP = 22;
+                        FORJUR     =  'SC';
+                     When c_TIPEMP = 24;
+                        FORJUR     =  'SU';
+                  EndSl;
+              Else;
+                  NOMCOR     =  *all' ';
+                  CODPROF    =  '799';
+                  FORJUR     =  *all' '     ;
+              EndIf;
               RAZSOC     =  *all' '     ;
-              FORJUR     =  *all' '     ;
-              INDNIVIMP  =  *all' '     ;
               GRUPBE     =  *all' '     ;
               SECCIRBE   =  *all' '     ;
               TIPSECCIR  =  *all' '     ;
@@ -1682,6 +1840,7 @@
       * @NOMBRES : Mover los nombres y apellidos del cliente
       /free
            begsr @nombres;
+            If tipoCliente ='0';
               Primernom = *all' ';
               Segundnom = *all' ';
               nombre80  = *all' ';
@@ -1709,6 +1868,10 @@
               endif;
               apellidos = %trim(apelli1er) + ' ' + %trim(apelli2er);
               nombres   = %trim(Primernom) + ' ' + %trim(segundnom);
+            Else;
+               apellidos = *Blanks;
+               nombres   = *Blanks;
+            Endif;
               EndSr  ;
       /end-free
       *----------------------------------------------------------------****
@@ -1794,9 +1957,20 @@
      C                   Parm                    deserr_ws
      C                   Parm                    Oficina
      C                   Parm                    $UsrUac          10
-     C                   Parm                    p_TimeSatmp
+     C                   Parm                    p_TimeSatmp   
+     C                   Parm                    TipoCliente       1 
+     c                   eval      paginable = 'TRUE' 
      c                   eval      cod_sis = %int($codsis)
      c                   eval      cod_pro = %int($codpro)
      c                   eval      PTarjeta = %SubSt($pTarjeta:4:16)
-     c                   eval      vlr_cup = 0
+      /Free
+         Exec sql
+        SELECT digits(dec(A.AGCORI, 4, 0)) Into :Oficina :IndNull 
+        FROM pltcaj a, 
+             pltcajero b 
+         WHERE A.CODCAJ = b.codcaj 
+               and A.AGCORI = B.AGCORI 
+               and a.codcaj = :$UsrUac;
+      /End-Free
      CSR                 EndSr
+
