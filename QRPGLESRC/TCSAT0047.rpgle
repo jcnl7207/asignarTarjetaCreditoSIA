@@ -1,7 +1,7 @@
 **Free
   ctl-opt DFTACTGRP(*NO);
 
-  Dcl-F SATCRELOG Usage(*Input: *output: *Update) Keyed;
+  Dcl-F SATCRELOG1 Usage(*Update) Keyed;
 
   Dcl-S  wTipDoc     Char(2);
   Dcl-S  $tipdoc     Char(2);
