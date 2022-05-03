@@ -2,17 +2,13 @@
   ctl-opt DFTACTGRP(*NO);
   Dcl-F SatCreLog Usage(*input: *output) Keyed;
   Dcl-F CliMaeL01 Usage(*Input) Keyed PreFix('C_');
-  
-  
   Dcl-DS $DsRcd  Extname('FINPLTDAT/PLTCTACUP');
   End-DS;
-  
   Dcl-DS *N  PSDS;
     @pgma          Char(10)   Pos(1);
     @job           Char(10)   Pos(244);
     @user          Char(10)   Pos(254);
   End-DS;
-
   Dcl-S  $RcdNw       Char(1500);
   Dcl-S  $RcdOr                  Like($RcdNw);
   Dcl-S  wTipDoc     Char(2);
@@ -27,12 +23,11 @@
   Dcl-S  Oficina     Char(4);
   Dcl-S  Paginable   Char(4);
   Dcl-S  p_TimesTamp timesTamp;
-  Dcl-s  SW_EXISTE   Ind; 
-  dcl-s IndNull      BinDec(4:0); 
+  Dcl-s  SW_EXISTE   Ind;
+  dcl-s IndNull      BinDec(4:0);
   dcl-s $Nit         zoned(17:0);
   dcl-s $VlrCup      zoned(13:2);
   dcl-s TipoCliente  char(1);
-
   Dcl-DS $Parm1a;
     $File          Char(10)   Pos(1);
     $Lib           Char(10)   Pos(11);
@@ -54,10 +49,10 @@
     $Filler3       Char(16)   Pos(81);
     $AllParm1      Char(2500) Pos(1);
   End-Ds;
-  
   Dcl-pr EscribirLog;
   End-Pr;
-
+  Dcl-pr actualizarLog;
+  End-Pr;
   Dcl-PR solicitarTarjeta  extpgm('TCSAT0045');
     $tipdoc        Char(2);
     $id            like($nit);
@@ -71,12 +66,10 @@
     error_ws       Char(7);
     deserr_w       Char(104);
     Oficina        Char(4);
-    $UsrUac        like(UsrUac); 
+    $UsrUac        like(UsrUac);
     p_TimeSatmp    timesTamp;
     TipoCliente    char(1);
   End-PR;
-
-
   dcl-pi *N;
     $Parm1 char(2500);
   end-pi;
@@ -87,18 +80,17 @@
         $RcdNw = %subst($AllParm1 :$DesRcdNw+1 :$LenRcdNw);
       endif;
       $DsRcd = $RcdNw;
-      sw_existe = *Off; 
+      sw_existe = *Off;
       Exec Sql
         Select '1' Into :sw_existe :IndNull
         From FinCooDat/SatSisPro
-        Where Sistema = :CODSIS and 
+        Where Sistema = :CODSIS and
               Producto = :CodPro;
-
       If Not sw_existe;
         Exec Sql
           Select '1' Into :sw_existe :IndNull
           From FinCooDat/SatSisProN
-          Where Sistema = :CODSIS and 
+          Where Sistema = :CODSIS and
                 Producto = :CodPro;
           If sw_existe;
             TipoCliente = '0';
@@ -112,10 +104,7 @@
   Endif;
   *InLr = *On;
   Return;
-
-
   dcl-proc @Move01;
-    
     CHAIN NitCta CliMaeL01;
     wTipDoc = %xlate(' ':'0':%editc(c_tipdoc:'3'));
     p_TimesTamp = %TimeStamp();
@@ -124,40 +113,48 @@
     EscribirLog();
     Oficina = '0001';
     // Monitor;
-    solicitarTarjeta(wTipDoc            :   
+    solicitarTarjeta(wTipDoc            :
                     $Nit                :
-                    CodSis              : 
+                    CodSis              :
                     CodPro              :
-                    $pTarjet            : 
+                    $pTarjet            :
                     $Marca              :
-                    $Tipo               : 
+                    $Tipo               :
                     $VlrCup             :
-                    $Nombre             : 
+                    $Nombre             :
                     error_ws            :
-                    deserr_ws           : 
+                    deserr_ws           :
                     Oficina             :
                     UsrUac              :
                     p_TimesTamp         :
                     TipoCliente);
-      EscribirLog();
+      actualizarLog();
     // on-error *all;
-    //  error_ws    = '9999';    
-    //  deserr_ws   = 'Error al llamar programa TCSAT0045'; 
+    //  error_ws    = '9999';
+    //  deserr_ws   = 'Error al llamar programa TCSAT0045';
     //  EscribirLog();
     // endmon;
   end-proc;
- 
   dcl-proc escribirLog;
+    Oficina     = %Char(c_AGCVIN);
     Instante    = p_TimeStamp;
-    tipdoc      = wTipDoc;   
-    id          = $Nit;    
-    pTarjeta    = $pTarjet;    
-    Marca       = $Marca;      
-    Tipo        = $Tipo;    
-    Cupo        = vlrcup;      
-    Nombre      = $Nombre;  
+    tipdoc      = wTipDoc;
+    id          = $Nit;
+    pTarjeta    = $pTarjet;
+    Marca       = $Marca;
+    Tipo        = $Tipo;
+    Cupo        = vlrcup;
+    Nombre      = $Nombre;
+    TipoCli     = TipoCliente;
     Usuario     = UsrUac;
     Write SATCRELOGR;
   end-proc;
 
+   dcl-proc actualizarLog;
+    Exec Sql
+    Update fincoodat/SatCreLog 
+      Set PTarjeta = :$pTarjet, deserr_ws = :deserr_ws 
+    Where   Instante = :Instante
+    With Nc;
+  end-proc;
 **end-free
