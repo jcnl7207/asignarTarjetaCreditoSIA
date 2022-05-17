@@ -1,4 +1,4 @@
-      *****Juan Nieto************************************************************
+      *****Juan Nieto***********************************************************
       * Programa. . . : SATCREPN
       * Descripcion . : Creacin de Cliente natural y contrato
       *                 al interior del aplicativo SAT
@@ -627,7 +627,6 @@
                                     pp_descRetorno);
             EndIf;
           endif;
-
           parmws = ' ';
           parmws =%trim(parmws) + CODENT;
           parmws =%Trim(parmws) + ';'  ;
@@ -1310,7 +1309,7 @@
            LIMDIACAJ2TAR = *all' ';
            MAXDIACAJ2TAR = *all' ';
            CODUSO        = 'C1';
-           INDEXECUO     = '1';
+           INDEXECUO     = '2';
            IBAN2         = *all' ';
            CTACARGO2     = *all' ';
            CLAMONCON2    = *all' ';
